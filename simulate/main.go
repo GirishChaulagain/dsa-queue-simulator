@@ -8,7 +8,12 @@ import (
 	"net"
 )
 
+var vehicleQueues []*VehicleQueue
+var lanes = []string{"AL1", "AL2", "BL1", "BL2", "CL1", "CL2", "DL1", "DL2"}
+
 func main() {
+
+	vehicleQueues = make([]*VehicleQueue, len(lanes))
 
 	listen, err := net.Listen("tcp", ":8080")
 	if err != nil {
