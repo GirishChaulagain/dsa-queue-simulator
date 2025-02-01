@@ -43,7 +43,7 @@ func main() {
 			continue
 		}
 
-		fmt.Printf("Random Vehicle Information: %+v\n", vehicle)
+		fmt.Printf("Sent Vehicle Information: %+v\n", vehicle)
 		time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
 
 	}

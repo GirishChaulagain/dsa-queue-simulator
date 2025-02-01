@@ -26,17 +26,25 @@ func main() {
 			continue
 		}
 
-		var vehicle shared.VehicleInfo
-		decoder := json.NewDecoder(connection)
-		for {
-			err := decoder.Decode((&vehicle))
-			if err != nil {
-				fmt.Println("Error Decoding vehicle:", err)
-				return
-			}
+		go handleConnection(connection)
 
-			fmt.Printf("Received vehicle: %+v\n", vehicle)
-		}
 	}
 
+}
+
+func handleConnection(connection net.Conn) {
+	defer connection.Close()
+
+	var vehicle shared.VehicleInfo
+	decoder := json.NewDecoder(connection)
+	for {
+		err := decoder.Decode((&vehicle))
+		if err != nil {
+			fmt.Println("Error Decoding vehicle:", err)
+			return
+		}
+
+		fmt.Printf("Received vehicle: %+v\n", vehicle)
+
+	}
 }
