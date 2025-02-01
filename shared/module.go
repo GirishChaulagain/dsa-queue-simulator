@@ -1,6 +1,6 @@
 package shared
 
-type Vehicle struct {
+type VehicleInfo struct {
 	Lane      string
 	VehicleId int
 	Direction string
