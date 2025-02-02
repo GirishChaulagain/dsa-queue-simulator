@@ -61,3 +61,9 @@ func (lq *LaneQueue) IncrementLane(index int) {
 		lq.lInfo[index].Count++
 	}
 }
+
+func (lq *LaneQueue) DecrementLane(index int) {
+	if index >= 0 && index < len(lq.lInfo) && lq.lInfo[index].Count > 0 {
+		lq.lInfo[index].Count--
+	}
+}

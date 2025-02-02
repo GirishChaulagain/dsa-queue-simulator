@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/GirishChaulagain/dsa-queue-simulator/shared"
 	"net"
+	"time"
 )
 
 var vehicleQueues []*VehicleQueue
@@ -29,6 +30,8 @@ func main() {
 	defer listen.Close()
 
 	fmt.Println("Simulator started, waiting for connection...")
+
+	go processTraffic()
 
 	for {
 		connection, err := listen.Accept()
@@ -68,6 +71,8 @@ func handleConnection(connection net.Conn) {
 
 		fmt.Println("Vehicle Count in lane Index ", laneIndex, " is : ", laneQueue.lInfo[laneIndex].Count)
 
+		fmt.Printf("Queue size: %d\n", vehicleQueues[laneIndex].Size())
+
 		fmt.Printf("Received vehicle: %+v\n", vehicle)
 
 		fmt.Printf("Incoming vehicle %v enqueud at lane index %d \n", vehicle, laneIndex)
@@ -79,6 +84,25 @@ func handleConnection(connection net.Conn) {
 		}
 
 		fmt.Println("******************************************************")
+	}
+}
+
+func processTraffic() {
+	for {
+		for i, lane := range lanes {
+			if vDequeue, ok := vehicleQueues[i].Dequeue(); ok {
+
+				fmt.Println("#######################################################")
+				fmt.Printf("Processed Vehicle %d From lane: %s, Direction: %s\n", vDequeue.VehicleId, vDequeue.Lane, vDequeue.Direction)
+
+				laneQueue.DecrementLane(i)
+
+				fmt.Printf("Vehicles remaining in %s: %d\n", lane, vehicleQueues[i].Size())
+
+				fmt.Println("#######################################################")
+			}
+		}
+		time.Sleep(500 * time.Millisecond)
 	}
 }
 
