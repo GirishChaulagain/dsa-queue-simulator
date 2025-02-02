@@ -1,16 +1,24 @@
 package main
 
-import "github.com/GirishChaulagain/dsa-queue-simulator/shared"
+import (
+	"github.com/GirishChaulagain/dsa-queue-simulator/shared"
+	"sync"
+)
 
 type VehicleQueue struct {
 	vQueue []shared.VehicleInfo
+	mu     sync.Mutex
 }
 
 func (vq *VehicleQueue) Enqueue(vehicle shared.VehicleInfo) {
+	vq.mu.Lock()
+	defer vq.mu.Unlock()
 	vq.vQueue = append(vq.vQueue, vehicle)
 }
 
 func (vq *VehicleQueue) Dequeue() (shared.VehicleInfo, bool) {
+	vq.mu.Lock()
+	defer vq.mu.Unlock()
 	if len(vq.vQueue) == 0 {
 		return shared.VehicleInfo{}, false
 	}
@@ -20,10 +28,14 @@ func (vq *VehicleQueue) Dequeue() (shared.VehicleInfo, bool) {
 }
 
 func (vq *VehicleQueue) Size() int {
+	vq.mu.Lock()
+	defer vq.mu.Unlock()
 	return len(vq.vQueue)
 }
 
 func (vq *VehicleQueue) Peek() (shared.VehicleInfo, bool) {
+	vq.mu.Lock()
+	defer vq.mu.Unlock()
 	if len(vq.vQueue) == 0 {
 		return shared.VehicleInfo{}, false
 	}

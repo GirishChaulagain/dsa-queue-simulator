@@ -65,9 +65,13 @@ func handleConnection(connection net.Conn) {
 
 		fmt.Printf("Incoming vehicle %v enqueud at lane index %d \n", vehicle, laneIndex)
 
-		fmt.Printf("vehicle at the first of a the lane index %d is %d\n", laneIndex, vehicle.VehicleId)
+		if frontVehicle, ok := vehicleQueues[laneIndex].Peek(); ok {
+			fmt.Printf("Vehicle at the front of lane index %d is %d\n", laneIndex, frontVehicle.VehicleId)
+		} else {
+			fmt.Println("Queue is empty for lane index:", laneIndex)
+		}
 
-		fmt.Println("************************************************************")
+		fmt.Println("******************************************************")
 	}
 }
 
