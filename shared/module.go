@@ -8,5 +8,5 @@ type VehicleInfo struct {
 
 type LaneInfo struct {
 	Lane  string
-	count int
+	Count int
 }

@@ -15,6 +15,10 @@ func main() {
 
 	vehicleQueues = make([]*VehicleQueue, len(lanes))
 
+	for i := range lanes {
+		vehicleQueues[i] = &VehicleQueue{}
+	}
+
 	listen, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		fmt.Println("Error starting simulator", err)
@@ -49,7 +53,29 @@ func handleConnection(connection net.Conn) {
 			return
 		}
 
+		laneIndex := getLaneIndex(vehicle.Lane)
+
+		if laneIndex == -1 {
+			continue
+		}
+
+		vehicleQueues[laneIndex].Enqueue(vehicle)
+
 		fmt.Printf("Received vehicle: %+v\n", vehicle)
 
+		fmt.Printf("Incoming vehicle %v enqueud at lane index %d \n", vehicle, laneIndex)
+
+		fmt.Printf("vehicle at the first of a the lane index %d is %d\n", laneIndex, vehicle.VehicleId)
+
+		fmt.Println("************************************************************")
 	}
+}
+
+func getLaneIndex(lane string) int {
+	for i, l := range lanes {
+		if l == lane {
+			return i
+		}
+	}
+	return -1
 }
