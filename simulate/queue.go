@@ -55,3 +55,9 @@ func InitLaneQueue() *LaneQueue {
 	}
 	return lq
 }
+
+func (lq *LaneQueue) IncrementLane(index int) {
+	if index >= 0 && index < len(lq.lInfo) {
+		lq.lInfo[index].Count++
+	}
+}

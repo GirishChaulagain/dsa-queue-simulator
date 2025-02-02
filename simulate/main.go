@@ -9,11 +9,13 @@ import (
 )
 
 var vehicleQueues []*VehicleQueue
+var laneQueue *LaneQueue
 var lanes = []string{"AL1", "AL2", "BL1", "BL2", "CL1", "CL2", "DL1", "DL2"}
 
 func main() {
 
 	vehicleQueues = make([]*VehicleQueue, len(lanes))
+	laneQueue = InitLaneQueue()
 
 	for i := range lanes {
 		vehicleQueues[i] = &VehicleQueue{}
@@ -60,6 +62,11 @@ func handleConnection(connection net.Conn) {
 		}
 
 		vehicleQueues[laneIndex].Enqueue(vehicle)
+		laneQueue.IncrementLane(laneIndex)
+
+		fmt.Println("lane Index = ", laneIndex)
+
+		fmt.Println("Vehicle Count in lane Index ", laneIndex, " is : ", laneQueue.lInfo[laneIndex].Count)
 
 		fmt.Printf("Received vehicle: %+v\n", vehicle)
 
