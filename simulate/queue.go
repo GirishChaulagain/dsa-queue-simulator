@@ -44,6 +44,7 @@ func (vq *VehicleQueue) Peek() (shared.VehicleInfo, bool) {
 
 type LaneQueue struct {
 	lInfo []shared.LaneInfo
+	mu    sync.Mutex
 }
 
 func InitLaneQueue() *LaneQueue {
@@ -57,13 +58,28 @@ func InitLaneQueue() *LaneQueue {
 }
 
 func (lq *LaneQueue) IncrementLane(index int) {
+	lq.mu.Lock()
+	defer lq.mu.Unlock()
 	if index >= 0 && index < len(lq.lInfo) {
 		lq.lInfo[index].Count++
 	}
 }
 
 func (lq *LaneQueue) DecrementLane(index int) {
+	lq.mu.Lock()
+	defer lq.mu.Unlock()
 	if index >= 0 && index < len(lq.lInfo) && lq.lInfo[index].Count > 0 {
 		lq.lInfo[index].Count--
 	}
+}
+
+func (lq *LaneQueue) GetPriorityLane() (int, bool) {
+	lq.mu.Lock()
+	defer lq.mu.Unlock()
+	for i, info := range lq.lInfo {
+		if info.Count > 10 {
+			return i, true
+		}
+	}
+	return -1, false
 }

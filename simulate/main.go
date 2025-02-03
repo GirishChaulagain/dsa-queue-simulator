@@ -89,20 +89,38 @@ func handleConnection(connection net.Conn) {
 
 func processTraffic() {
 	for {
-		for i, lane := range lanes {
-			if vDequeue, ok := vehicleQueues[i].Dequeue(); ok {
+		priorityLane, ispriority := laneQueue.GetPriorityLane()
+		if ispriority {
 
-				fmt.Println("#######################################################")
-				fmt.Printf("Processed Vehicle %d From lane: %s, Direction: %s\n", vDequeue.VehicleId, vDequeue.Lane, vDequeue.Direction)
+			fmt.Println("Processing PRIORITY lane : ", lanes[priorityLane])
 
-				laneQueue.DecrementLane(i)
+			for laneQueue.GetCount(priorityLane) > 5 {
+				processLane(priorityLane)
+				time.Sleep(1 * time.Second)
+			}
 
-				fmt.Printf("Vehicles remaining in %s: %d\n", lane, vehicleQueues[i].Size())
-
-				fmt.Println("#######################################################")
+		} else {
+			fmt.Println("Normal Traffic Flow")
+			for i := range vehicleQueues {
+				processLane(i)
+				time.Sleep(500 * time.Millisecond)
 			}
 		}
-		time.Sleep(500 * time.Millisecond)
+	}
+}
+
+func processLane(index int) {
+
+	if vDequeue, ok := vehicleQueues[index].Dequeue(); ok {
+
+		fmt.Println("#######################################################")
+		fmt.Printf("Processed Vehicle %d From lane: %s, Direction: %s\n", vDequeue.VehicleId, vDequeue.Lane, vDequeue.Direction)
+
+		laneQueue.DecrementLane(index)
+
+		fmt.Printf("Vehicles remaining in %s: %d\n", lanes, vehicleQueues[index].Size())
+
+		fmt.Println("#######################################################")
 	}
 }
 
@@ -111,6 +129,15 @@ func getLaneIndex(lane string) int {
 		if l == lane {
 			return i
 		}
+	}
+	return -1
+}
+
+func (lq *LaneQueue) GetCount(index int) int {
+	lq.mu.Lock()
+	defer lq.mu.Unlock()
+	if index >= 0 && index < len(lq.lInfo) {
+		return lq.lInfo[index].Count
 	}
 	return -1
 }
